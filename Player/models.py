@@ -1,0 +1,18 @@
+from django.db import models
+class Player (models.Model):
+    account_id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=100, default = "")
+    level = models.IntegerField(default = 1)
+    exp = models.IntegerField(default = 0)
+    fans = models.IntegerField(default = 0)
+    speed = models.IntegerField(default = 0)
+    jump = models.IntegerField(default = 0)
+    shotForce = models.IntegerField(default = 0)
+    point = models.IntegerField(default = 1)
+    # money = models.IntegerField()
+    # characters = models.TextField()
+    # skins = models.TextField()
+    # pets = models.TextField()
+    # stadiums = models.TextField()
+    # energy = models.IntegerField(default = 120)
+    # coefficient = models.IntegerField(default = 0)
