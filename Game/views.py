@@ -26,6 +26,9 @@ def cursor_to_dict(cursor):
         data.append(rowData)
     return data
 
+def chat(req):
+    return render(req,"chat/lobby.html")
+
 class GameResutls(APIView):
     def post(self, req):
         data = resutls(data= req.data)

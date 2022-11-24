@@ -23,11 +23,12 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()
 
     def receive(self, text_data):
-        print("receive:" + text_data)
-        text_data_json = json.loads(text_data)
-        async_to_sync(self.channel_layer.send)(
-            self.channel_name, text_data_json
-        )
+        # print("receive:" + text_data)
+        # text_data_json = json.loads(text_data)
+        # async_to_sync(self.channel_layer.send)(
+        #     self.channel_name, text_data_json
+        # )
+        self.send(text_data=text_data)
 
     def login(self, event):
         _token = event["data"]

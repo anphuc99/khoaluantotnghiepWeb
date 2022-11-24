@@ -13,6 +13,7 @@
     <form id="form">
         <input type="text" name="type"/>
         <input type="text" name="message"/>
+        <input type="submit" name="sumit"/>
     </form>
 
     <div id="messages"></div>
@@ -26,13 +27,13 @@
             let data = JSON.parse(e.data)
             console.log('Data:', data)
 
-            if(data.type === 'chat'){
+
                 let messages = document.getElementById('messages')
 
                 messages.insertAdjacentHTML('beforeend', `<div>
                                         <p>${data.message}</p>
                                     </div>`)
-            }
+
         }
 
         let form = document.getElementById('form')
