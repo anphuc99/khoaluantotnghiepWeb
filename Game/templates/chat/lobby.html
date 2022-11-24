@@ -13,7 +13,7 @@
     <form id="form">
         <input type="text" name="type"/>
         <input type="text" name="message"/>
-        <input type="submit" name="sumit"/>
+        <button type="button" onclick="btnClick()">click</button>
     </form>
 
     <div id="messages"></div>
@@ -36,15 +36,11 @@
 
         }
 
-        let form = document.getElementById('form')
-        form.addEventListener('submit', (e)=> {
-            e.preventDefault()
-            let message = e.target.message.value 
+        function btnClick(e){            
             chatSocket.send(JSON.stringify({
-                'message':message
+                'message':"message"
             }))
-            form.reset()
-        })
+        }
 
     </script>
 </body>
