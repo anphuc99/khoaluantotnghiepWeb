@@ -19,7 +19,8 @@
     <div id="messages"></div>
 
     <script type="text/javascript">
-        let url = `ws://${window.location.host}/ws/socket-server/`
+        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        let url = `${ws_scheme}://${window.location.host}/ws/socket-server/`
 
         const chatSocket = new WebSocket(url)
 
