@@ -6,6 +6,7 @@ from .models import Player
 from Account.models import Account
 from django.db import IntegrityError
 import socket
+from django.forms.models import model_to_dict
 # Create your views here.
 
 class ChooseCharaterAPI(APIView):
@@ -69,3 +70,15 @@ class SetMultiplierAPI(APIView):
             print("Account.DoesNotExist")
             return Response(status= status.HTTP_400_BAD_REQUEST)  
 
+class GetPlayer(APIView):
+    def post(self, req):
+        if req.data["key"] ==  "SqgfZ1SE4v3OKlWezV1ft3PrP3O17zi0pEU2O1FcRQORp5YUjv":
+            try:
+                data = req.data
+                account_id = data["account_id"]
+                player = Player.objects.get(account_id = account_id)
+                return Response(data={
+                    "player": model_to_dict(player),
+                    }, status=status.HTTP_200_OK) 
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST) 

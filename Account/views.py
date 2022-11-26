@@ -8,8 +8,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import AddAccount, Login, SeriAccount, Token
 from .models import Account
+from Player.models import Player
 from django.db import IntegrityError
 from Game.consumers import ChatConsumer
+from django.forms.models import model_to_dict
 import hashlib
 import base64
 import binascii
@@ -92,3 +94,17 @@ class TokenAPI(APIView):
             return token
         except:
             return False
+        
+class GetAccount(APIView):
+    def post(self, req):
+        if req.data["key"] ==  "SqgfZ1SE4v3OKlWezV1ft3PrP3O17zi0pEU2O1FcRQORp5YUjv":
+            try:
+                data = req.data
+                _token = data["_token"]
+                account = Account.objects.get(_token = _token)
+                return Response(data={
+                    "account": model_to_dict(account),
+                    }, status=status.HTTP_200_OK) 
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST) 
+            
