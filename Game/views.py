@@ -11,6 +11,8 @@ import json
 from types import SimpleNamespace
 from SoccerLegend.Global import Global
 from django.db import connection
+from django.db import transaction
+import math
 
 # Create your views here.
 
@@ -28,37 +30,59 @@ def cursor_to_dict(cursor):
 
 class GameResutls(APIView):
     def post(self, req):
-        data = resutls(data= req.data)
-        if not data.is_valid():
-            return Response(data="not ok", status=status.HTTP_400_BAD_REQUEST)    
-        Items = json.loads(data["playerTeams"].value, object_hook=lambda d: SimpleNamespace(**d))
-        info = []
-        for Item in Items.Items:
-            info.append({
-                "account_id": Item.account_id,
-                "team": Item.team
-            })
-        JsonInfo = json.dumps(info)
-        game = Game.objects.create(info = JsonInfo, redScore = data["redScore"].value, blueScore = data["blueScore"].value)
-        for item in info:
-            player = Player.objects.get(account_id = item["account_id"])
-            history = player.history
-            if history == "":
-                player.history = str(game.id)
+        if req.data["key"] ==  "SqgfZ1SE4v3OKlWezV1ft3PrP3O17zi0pEU2O1FcRQORp5YUjv":
+            data = req.data
+            redScore = data["redScore"]
+            blueScore = data["blueScore"]
+            master = data["master"]
+            playerTeam = data["playerTeam"]
+            with transaction.atomic():
+                game = Game.objects.create(redScore = redScore, blueScore = blueScore, master = master)
+                for player in playerTeam:
+                    playerDB = Player.objects.get(account_id = player["account_id"])
+                    GameInfo.objects.create(gameID = game.id, 
+                                            playerID = player["account_id"], 
+                                            team = player["team"],
+                                            name = playerDB.name,
+                                            level = playerDB.level)
+                self.setFansPlayer(redScore= redScore, blueScore= blueScore, playerTeams= playerTeam)
+            return Response(data= {"gameID": game.id},status= status.HTTP_200_OK)  
+        else:
+            return Response(data= "not ok",status= status.HTTP_400_BAD_REQUEST)  
+    def setFansPlayer(self, redScore, blueScore, playerTeams):
+        for playerTeam in playerTeams:
+            player = Player.objects.get(account_id = playerTeam["account_id"])
+            if redScore > blueScore:
+                if playerTeam["team"] == 0:
+                    player.fans += 100
+                    self.addExp(player= player, exp= 80)
+                    player.save()
+                else:
+                    player.fans = max(player.fans - 50, 0)
+                    self.addExp(player= player, exp= 20)
+                    player.save()
+            elif blueScore > redScore:
+                if playerTeam["team"] == 1:
+                    player.fans += 100
+                    self.addExp(player= player, exp= 80)
+                    player.save()
+                else:
+                    player.fans = max(player.fans - 50, 0)
+                    self.addExp(player= player, exp= 20)
+                    player.save()
             else:
-                player.history = history + "," + str(game.id)
-            redScore = data["redScore"].value
-            blueScore = data["blueScore"].value
-            
-            if redScore > blueScore and item["team"] == 0:
-                player.score = player.score + 1
-            elif redScore < blueScore and item["team"] == 1:
-                player.score = player.score + 1
-            elif redScore == blueScore:
-                player.score = player.score + 1            
-            player.save()
-        
-        return Response(status=status.HTTP_200_OK)    
+                self.addExp(player= player, exp= 50)
+    
+    def addExp(self, player, exp):
+        if player.level < 30:
+            player.exp += exp
+            if player.exp >= math.floor(1.4**(player.level-1) + 800):
+                player.level += 1
+                if player.level < 30:
+                    player.exp -= math.floor(1.4**player.level + 800)
+                else:
+                    player.exp = 0                
+                player.point += 1
         
 class GetTopRank(APIView):
     def get(self, req):
