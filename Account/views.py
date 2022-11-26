@@ -10,7 +10,6 @@ from .serializers import AddAccount, Login, SeriAccount, Token
 from .models import Account
 from django.db import IntegrityError
 from Game.consumers import ChatConsumer
-from websocket import create_connection
 import hashlib
 import base64
 import binascii
@@ -69,13 +68,6 @@ class LoginAPI(APIView):
     
     def getToken(self, username):        
         account = Account.objects.get(username = username)
-        ws = create_connection("ws://localhost:8000/ws/socket-server/")
-        print ("connected")
-        ws.send(json.dumps( {
-                "type": "logout",
-                "data": account._token
-            }))
-        ws.close()
         _token = binascii.hexlify(os.urandom(35)).decode();  
         account._token = _token
         account.save()

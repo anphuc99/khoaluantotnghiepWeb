@@ -5,7 +5,7 @@ class Game (models.Model):
     redScore = models.IntegerField()
     blueScore = models.IntegerField()
     master = models.IntegerField()
-    date = models.DateField(default = datetime.now)
+    date = models.DateTimeField(default = datetime.now)
     
 class GameInfo(models.Model):
     gameID = models.IntegerField()

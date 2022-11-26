@@ -8,5 +8,4 @@ urlpatterns = [
     path("get-my-rank/<int:account_id>", views.GetMyRank.as_view(), name="get-my-rank"),
     path("get-history/<int:account_id>", views.GetHistory.as_view(), name="get-history"),
     path("get-game-info/<int:game_id>", views.GetResultGame.as_view(), name="get-game-info"),
-    path("chat", views.chat, name="chat"),
 ]

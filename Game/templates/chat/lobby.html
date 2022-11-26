@@ -13,14 +13,12 @@
     <form id="form">
         <input type="text" name="type"/>
         <input type="text" name="message"/>
-        <button type="button" onclick="btnClick()">click</button>
     </form>
 
     <div id="messages"></div>
 
     <script type="text/javascript">
-        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-        let url = `${ws_scheme}://${window.location.host}/ws/socket-server/`
+        let url = `ws://${window.location.host}/ws/socket-server/`
 
         const chatSocket = new WebSocket(url)
 
@@ -28,20 +26,24 @@
             let data = JSON.parse(e.data)
             console.log('Data:', data)
 
-
+            if(data.type === 'chat'){
                 let messages = document.getElementById('messages')
 
                 messages.insertAdjacentHTML('beforeend', `<div>
                                         <p>${data.message}</p>
                                     </div>`)
-
+            }
         }
 
-        function btnClick(e){            
+        let form = document.getElementById('form')
+        form.addEventListener('submit', (e)=> {
+            e.preventDefault()
+            let message = e.target.message.value 
             chatSocket.send(JSON.stringify({
-                'message':"message"
+                'message':message
             }))
-        }
+            form.reset()
+        })
 
     </script>
 </body>
